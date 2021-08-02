@@ -24,6 +24,7 @@ unsigned long sum_path(unsigned short);
 short is_best(graph_t *,unsigned short, unsigned short, unsigned long);
 unsigned short trova_min_from(unsigned short, unsigned long *, unsigned long, unsigned short);
 unsigned short trova_min(unsigned short, unsigned long *);
+void * ordina(graph_t *, unsigned short);
 
 int main( int argc, char * argv[])
 {
@@ -34,7 +35,7 @@ int main( int argc, char * argv[])
   unsigned long size_path;
   int return_value;
 
-  return_value = scanf("%hu,%hu", &d, &k);
+  return_value = scanf("%hu %hu", &d, &k);
   if(return_value != 0){
     pos=0;
     if((best_graph = malloc(k*sizeof(graph_t)))){
@@ -43,18 +44,18 @@ int main( int argc, char * argv[])
       return_value = scanf("%s\n", comando);
       while(!feof(stdin)){
         if(return_value != 0){
+          printf("WHILE: %s %hu\n", comando, pos);
           if(strcmp(comando, GRAFO) == 0){ /*Se le stringhe sono uguali*/
             //strcpy(comando, "");
             pos = pos+1;
             size_path = sum_path(d); /*Calcola la bontà del grafo*/
             is_best(best_graph,k,pos-1,size_path);  /*Se opportuno, inserisce il grafo nei k migliori*/
+            for(i=0; i<k && best_graph[i].name!= -1; i++)
+              printf("graph_name:%d ---- points: %lu\n", best_graph[i].name, best_graph[i].sum_path);
           }else if(strcmp(comando, TOPK)==0){
             //strcpy(comando, "");
-            pos = 0;
             for(i=0; i<k && best_graph[i].name!= -1; i++)
               printf("%d ", best_graph[i].name);
-            for(i=0; i<k; i++)  /*Svuoto l'array dei k migliori grafi*/
-              best_graph[i].name=-1;
           }
           return_value = scanf("%s", comando);
         }else
@@ -75,26 +76,34 @@ short is_best(graph_t * array, unsigned short len, unsigned short pos, unsigned 
   unsigned long max;
   _Bool flag=0;
 
-  max = array[0].sum_path;
-  indice_max=0;
-  for(i=0; i<len; i++){
-    if(array[i].name == -1){
-      array[i].name = pos;
-      array[i].sum_path = path;
-      flag = 1;
-      break;
-    }else if((array[i].sum_path > max)||((array[i].sum_path == max) &&(array[i].name>indice_max))){
-        max = array[i].sum_path;
-        indice_max = i;
+  if(pos<len){
+    for(i=0; i<len; i++){
+      if(array[i].name == -1){
+        array[i].name = pos;
+        array[i].sum_path = path;
+        flag = 1;
+        break;
+        }
+      }
+    }else{
+      max = array[0].sum_path;
+      indice_max=0;
+      for(i=0; i<len; i++){
+        if((array[i].sum_path > max)||((array[i].sum_path == max) &&(array[i].name>indice_max))){
+            max = array[i].sum_path;
+            indice_max = i;
+        }
+      }
+      printf("Massimo:= %lu\n", max);
+      printf("Indice_max := %hu\n", indice_max);
+      if(path <= max && flag==0){
+        array[indice_max].sum_path = path;
+        array[indice_max].name = pos;
+        return 1;
       }
     }
+    return 0;
 
-  if(path < max && flag==0){
-    array[indice_max].sum_path = max;
-    array[indice_max].name = pos;
-    return 1;
-  }
-  return 0;
 }
 
 unsigned long sum_path(unsigned short nodi) /*Fare una branch - IDEA: spostare il puntatore sull'input e prendere ciò che serve*/
@@ -137,6 +146,7 @@ unsigned long sum_path(unsigned short nodi) /*Fare una branch - IDEA: spostare i
       somma = 0;
       for(i=1; i<nodi; i++)
         somma = somma + dijkstra[i];
+      printf("Somma:= %lu\n", somma);
       return somma;
     }else{
       printf("Una Scanf è fallita\n");
