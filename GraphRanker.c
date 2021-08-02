@@ -24,7 +24,8 @@ unsigned long sum_path(unsigned short);
 short is_best(graph_t *,unsigned short, unsigned short, unsigned long);
 unsigned short trova_min_from(unsigned short, unsigned long *, unsigned long, unsigned short);
 unsigned short trova_min(unsigned short, unsigned long *);
-void * ordina(graph_t *, unsigned short);
+int partiziona (graph_t *, int, int);
+void quick_sort(graph_t *, int, int);
 
 int main( int argc, char * argv[])
 {
@@ -46,10 +47,9 @@ int main( int argc, char * argv[])
         if(return_value != 0){
           printf("WHILE: %s %hu\n", comando, pos);
           if(strcmp(comando, GRAFO) == 0){ /*Se le stringhe sono uguali*/
-            //strcpy(comando, "");
-            pos = pos+1;
             size_path = sum_path(d); /*Calcola la bontà del grafo*/
-            is_best(best_graph,k,pos-1,size_path);  /*Se opportuno, inserisce il grafo nei k migliori*/
+            is_best(best_graph,k,pos,size_path);  /*Se opportuno, inserisce il grafo nei k migliori*/
+            pos = pos+1;
             for(i=0; i<k && best_graph[i].name!= -1; i++)
               printf("graph_name:%d ---- points: %lu\n", best_graph[i].name, best_graph[i].sum_path);
           }else if(strcmp(comando, TOPK)==0){
@@ -210,4 +210,42 @@ unsigned short trova_min(unsigned short len, unsigned long * array)
     }
   }
   return indice_min;
+}
+
+/*ORDINAMENTO*/
+int partiziona (graph_t * arr, int min, int max)
+{
+    unsigned long med = arr[max];
+    int i = (min - 1);
+    int j;
+    graph_t tmp;
+
+    for (j = min; j <= max - 1; j++){
+        if (arr[j].name < med){
+            i++;
+            tmp.sum_path = arr[i].sum_path;
+            tmp.name = arr[i].name;
+            arr[i].sum_path = arr[j].sum_path;
+            arr[i].name = arr[j].name
+            arr[j].sum_path = tmp.sum_path;
+            arr[j].name= tmp.name;
+        }
+    }
+    tmp.sum_path = arr[i + 1].sum_path;
+    tmp.name = arr[i + 1].name;
+    arr[i + 1].sum_path = arr[max].sum_path;
+    arr[i + 1].name = arr[max].name;
+    arr[max].sum_path = tmp.sum_path;
+    arr[max].name = tmp.name;
+    return (i + 1);
+}
+
+void quick_sort(graph_t * arr, int min, int max)
+{
+    if (min < max){
+        int part = partiziona(arr, min, max);
+
+        quick_sort(arr, min, part - 1);
+        quick_sort(arr, part + 1, max);
+    }
 }
