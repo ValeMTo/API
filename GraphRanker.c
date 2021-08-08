@@ -17,16 +17,17 @@ typedef struct {
 #include <string.h>
 #include <stdlib.h>
 #define LEN 13 /*AggiungiGrafo sono 13 caratteri*/
-#define GRAFO "AggiungiGrafo"
+#define GRAFO 'A'
 #define TOPK "TopK"
-
+#define SIZE_UNSIGNED 10
+#define OFFSET '0'
 
 /* Prototipi */
 unsigned long sum_path(unsigned short);
 short is_best(graph_t *,unsigned short, unsigned short, unsigned long);
 int trova_min_from(unsigned short, unsigned long *, unsigned long, unsigned short);
 int trova_min(unsigned short, unsigned long *);
-int compara(graph_t *, graph_t *);
+void insertion_sort(graph_t * array, unsigned short len);
 
 int main( int argc, char * argv[])
 {
@@ -46,28 +47,22 @@ int main( int argc, char * argv[])
       return_value = scanf("%s\n", comando);
       while(!feof(stdin)){
         if(return_value != 0){
-          //printf("WHILE: %s %hu\n", comando, pos);
-          if(strcmp(comando, GRAFO) == 0){ /*Se le stringhe sono uguali*/
+          if(comando[0]==GRAFO){ /*Se le stringhe sono uguali*/
             size_path = sum_path(d); /*Calcola la bontà del grafo*/
-            //printf("sizepath finito\n");
             is_best(best_graph,k,pos,size_path);  /*Se opportuno, inserisce il grafo nei k migliori*/
             pos = pos+1;
-            // for(i=0; i<k; i++)
-            //   if(best_graph[i].name!= -1)
-            //     printf("graph_name:%d ---- points: %lu\n", best_graph[i].name, best_graph[i].sum_path);or(i=0; i<k; i++)
-          }else if(strcmp(comando, TOPK)==0){
-            qsort(best_graph, k, sizeof(graph_t), compara);
-            /*
-            for(i=0; i<k && best_graph[i].name!= -1; i++)
-              printf("%d ", best_graph[i].name);
-            */
-            for(i=0; i<k ; i++)
+          }else{
+            #ifndef EVAL
+            insertion_sort(best_graph, k);
+            #endif
+            for(i=0; i<k-1 ; i++)
               if(best_graph[i].name!= -1){
                 printf("%d ", best_graph[i].name);
               }
+            printf("%d\n", best_graph[i].name);
           }
           return_value = scanf("%s", comando);
-        }else 
+        }else
           printf("Scanf fallita");
       }
     } else
@@ -75,7 +70,6 @@ int main( int argc, char * argv[])
     free(best_graph);
   }else
     printf("Scanf fallita");
-  printf("\n");
   return 0;
 }
 
@@ -118,45 +112,62 @@ short is_best(graph_t * array, unsigned short len, unsigned short pos, unsigned 
 unsigned long sum_path(unsigned short nodi) /*Fare una branch - IDEA: spostare il puntatore sull'input e prendere ciò che serve*/
 {
   unsigned long dijkstra[nodi], min, somma;
-  unsigned int matrice[nodi][nodi];
-  unsigned short i,j, used;
+  unsigned int matrice[nodi][nodi], num;
+  unsigned short i, j,used, ind, potenza, len;
   int indice_min;
   int return_value;
-
+  char riga[(SIZE_UNSIGNED+1)*nodi];
   if(nodi>1){
+  //   for(i=0; i<nodi; i++){
+  //     for(j=0; j<nodi-1; j++){
+  //       return_value = scanf("%u,", &matrice[i][j]);
+  //     }
+  //     return_value = scanf("%u", &matrice[i][j]);
+  //   }
+  //   for(i=0; i<nodi; i++){
+  //     matrice[i][i]=0;
+  //     dijkstra[i] = matrice[0][i];
+  //   }
     for(i=0; i<nodi; i++){
-      for(j=0; j<nodi-1; j++){
-        return_value = scanf("%u,", &matrice[i][j]);
+      fgets(riga, (SIZE_UNSIGNED+1)*nodi, stdin);
+      printf("stringa acquisita: %s", riga);
+      ind=nodi;
+      /*Calcolo lunghezza array*/
+      len=0;
+      for(j=0; riga[j] != '\0'; j++){
+        len++;
       }
-      return_value = scanf("%u", &matrice[i][j]);
-    }
-    for(i=0; i<nodi; i++){
-      matrice[i][i]=0;
-      dijkstra[i] = matrice[0][i];
-    }
+      printf("len:=%hu\n",len );
 
-    // for(i=0; i<nodi; i++){
-    //   for(j=0; j<nodi-1; j++){
-    //     printf("%u,",matrice[i][j]);
-    //   }
-    //   printf("%u\n", matrice[i][j]);
-    // }
+      num=0;
+      potenza=1;
+      for(j=len-2; j>=0; j--){
+        printf("j:=%u\n", j);
+        printf("indice ind: %hu\n", ind);
+        if(riga[j] == ','){
+          matrice[i][ind-1]=num;
+          printf("matrice[%hu][%hu-1]:=%u\n",i, ind, num);
+          ind--;
+          num=0;
+          potenza=1;
+          j--;
+        }
+
+        num = num + (riga[j] - OFFSET)*potenza;
+        potenza = potenza * 10;
+
+      }
+    }
 
     if(return_value != 0){
       used=nodi;
       indice_min = trova_min(nodi, dijkstra);
-      //printf("trovamin concluso in sum_path %d \n", indice_min);
       if(indice_min != -1){
-        //min = dijkstra[indice_min];
         while(used>0 && indice_min !=-1){
           min = dijkstra[indice_min];
-          //printf("Stampa dijkstra!!!!!!!!!!!!!!!!!\n");
-          // for(i=0; i<nodi; i++)
-          //   printf("%lu ", dijkstra[i]);
-          // printf("\n");
+
           for(i=1; i<nodi; i++){
             if((min + matrice[indice_min][i]<dijkstra[i] || dijkstra[i]==0) && matrice[indice_min][i] != 0)
-              //printf("sto per sostituire %lu + %u = %lu\n",min, matrice[indice_min][i], min + matrice[indice_min][i] );
               dijkstra[i] = min + matrice[indice_min][i];
           }
           indice_min = trova_min_from(nodi, dijkstra, min, indice_min);
@@ -240,8 +251,21 @@ int trova_min(unsigned short len, unsigned long * array)
   return indice_min;
 }
 
-/*ORDINAMENTO*/
-int compara(graph_t * a, graph_t * b)
+void insertion_sort(graph_t * array, unsigned short len)
 {
-  return a->name - b->name;
+  unsigned short i,j;
+  graph_t tmp;
+
+  for(i=1; i<len; i++){
+    j=i;
+    while(j>0&& array[j-1].name >array[j].name){
+      tmp.name = array[j].name;
+      tmp.sum_path =array[j].sum_path;
+      array[j].name=array[j-1].name;
+      array[j].sum_path=array[j-1].sum_path;
+      array[j-1].name=tmp.name;
+      array[j-1].sum_path=tmp.sum_path;
+      j--;
+    }
+  }
 }
