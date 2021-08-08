@@ -128,36 +128,36 @@ unsigned long sum_path(unsigned short nodi) /*Fare una branch - IDEA: spostare i
   //     matrice[i][i]=0;
   //     dijkstra[i] = matrice[0][i];
   //   }
-    for(i=0; i<nodi; i++){
-      fgets(riga, (SIZE_UNSIGNED+1)*nodi, stdin);
-      printf("stringa acquisita: %s", riga);
-      ind=nodi;
-      /*Calcolo lunghezza array*/
-      len=0;
-      for(j=0; riga[j] != '\0'; j++){
-        len++;
-      }
-      printf("len:=%hu\n",len );
-
-      num=0;
-      potenza=1;
-      for(j=len-2; j>=0; j--){
-        printf("j:=%u\n", j);
-        printf("indice ind: %hu\n", ind);
-        if(riga[j] == ','){
-          matrice[i][ind-1]=num;
-          printf("matrice[%hu][%hu-1]:=%u\n",i, ind, num);
-          ind--;
-          num=0;
-          potenza=1;
-          j--;
-        }
-
-        num = num + (riga[j] - OFFSET)*potenza;
-        potenza = potenza * 10;
-
-      }
-    }
+    // for(i=0; i<nodi; i++){
+    //   fgets(riga, (SIZE_UNSIGNED+1)*nodi, stdin);
+    //   printf("stringa acquisita: %s", riga);
+    //   ind=nodi;
+    //   /*Calcolo lunghezza array*/
+    //   len=0;
+    //   for(j=0; riga[j] != '\0'; j++){
+    //     len++;
+    //   }
+    //   printf("len:=%hu\n",len );
+    //
+    //   num=0;
+    //   potenza=1;
+    //   for(j=len-2; j>=0; j--){
+    //     printf("j:=%u\n", j);
+    //     printf("indice ind: %hu\n", ind);
+    //     if(riga[j] == ','){
+    //       matrice[i][ind-1]=num;
+    //       printf("matrice[%hu][%hu-1]:=%u\n",i, ind, num);
+    //       ind--;
+    //       num=0;
+    //       potenza=1;
+    //       j--;
+    //     }
+    //
+    //     num = num + (riga[j] - OFFSET)*potenza;
+    //     potenza = potenza * 10;
+    //
+    //   }
+    // }
 
     if(return_value != 0){
       used=nodi;
