@@ -67,7 +67,7 @@ int main( int argc, char * argv[])
               }
           }
           return_value = scanf("%s", comando);
-        }else
+        }else 
           printf("Scanf fallita");
       }
     } else
