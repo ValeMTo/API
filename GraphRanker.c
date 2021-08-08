@@ -65,7 +65,6 @@ int main( int argc, char * argv[])
               if(best_graph[i].name!= -1){
                 printf("%d ", best_graph[i].name);
               }
-            printf("\n");
           }
           return_value = scanf("%s", comando);
         }else
