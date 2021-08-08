@@ -1,6 +1,8 @@
 /*
 Progetto API Anno 2021
 Valeria Amato
+
+Versione 2
 */
 
 /*Definizione tipo*/
@@ -44,17 +46,16 @@ int main( int argc, char * argv[])
       return_value = scanf("%s\n", comando);
       while(!feof(stdin)){
         if(return_value != 0){
-          printf("WHILE: %s %hu\n", comando, pos);
+          //printf("WHILE: %s %hu\n", comando, pos);
           if(strcmp(comando, GRAFO) == 0){ /*Se le stringhe sono uguali*/
             size_path = sum_path(d); /*Calcola la bontà del grafo*/
-            printf("sizepath finito\n");
+            //printf("sizepath finito\n");
             is_best(best_graph,k,pos,size_path);  /*Se opportuno, inserisce il grafo nei k migliori*/
             pos = pos+1;
-            for(i=0; i<k; i++)
-              if(best_graph[i].name!= -1)
-                printf("graph_name:%d ---- points: %lu\n", best_graph[i].name, best_graph[i].sum_path);
+            // for(i=0; i<k; i++)
+            //   if(best_graph[i].name!= -1)
+            //     printf("graph_name:%d ---- points: %lu\n", best_graph[i].name, best_graph[i].sum_path);or(i=0; i<k; i++)
           }else if(strcmp(comando, TOPK)==0){
-            //strcpy(comando, "");
             qsort(best_graph, k, sizeof(graph_t), compara);
             /*
             for(i=0; i<k && best_graph[i].name!= -1; i++)
@@ -73,9 +74,9 @@ int main( int argc, char * argv[])
     } else
       printf("Allocazione non riuscita di %hu elementi", k);
     free(best_graph);
-    printf("\n");
   }else
     printf("Scanf fallita");
+  printf("\n");
   return 0;
 }
 
@@ -103,8 +104,8 @@ short is_best(graph_t * array, unsigned short len, unsigned short pos, unsigned 
             indice_max = i;
         }
       }
-      printf("Massimo:= %lu\n", max);
-      printf("Indice_max := %hu\n", indice_max);
+      //printf("Massimo:= %lu\n", max);
+      //printf("Indice_max := %hu\n", indice_max);
       if(path <= max && flag==0){
         array[indice_max].sum_path = path;
         array[indice_max].name = pos;
@@ -130,21 +131,33 @@ unsigned long sum_path(unsigned short nodi) /*Fare una branch - IDEA: spostare i
       }
       return_value = scanf("%u", &matrice[i][j]);
     }
-    printf("matrice presa\n");
     for(i=0; i<nodi; i++){
       matrice[i][i]=0;
       dijkstra[i] = matrice[0][i];
     }
-    printf("dijkstra risolto\n");
+
+    // for(i=0; i<nodi; i++){
+    //   for(j=0; j<nodi-1; j++){
+    //     printf("%u,",matrice[i][j]);
+    //   }
+    //   printf("%u\n", matrice[i][j]);
+    // }
+
     if(return_value != 0){
       used=nodi;
       indice_min = trova_min(nodi, dijkstra);
-      printf("trovamin concluso in sum_path \n");
+      //printf("trovamin concluso in sum_path %d \n", indice_min);
       if(indice_min != -1){
-        min = dijkstra[indice_min];
+        //min = dijkstra[indice_min];
         while(used>0 && indice_min !=-1){
+          min = dijkstra[indice_min];
+          //printf("Stampa dijkstra!!!!!!!!!!!!!!!!!\n");
+          // for(i=0; i<nodi; i++)
+          //   printf("%lu ", dijkstra[i]);
+          // printf("\n");
           for(i=1; i<nodi; i++){
             if((min + matrice[indice_min][i]<dijkstra[i] || dijkstra[i]==0) && matrice[indice_min][i] != 0)
+              //printf("sto per sostituire %lu + %u = %lu\n",min, matrice[indice_min][i], min + matrice[indice_min][i] );
               dijkstra[i] = min + matrice[indice_min][i];
           }
           indice_min = trova_min_from(nodi, dijkstra, min, indice_min);
@@ -156,10 +169,10 @@ unsigned long sum_path(unsigned short nodi) /*Fare una branch - IDEA: spostare i
       somma = 0;
       for(i=0; i<nodi; i++)
         somma = somma + dijkstra[i];
-      printf("Somma:= %lu\n", somma);
+      //printf("Somma:= %lu\n", somma);
       return somma;
     }else{
-      printf("Una Scanf è fallita\n");
+      //printf("Una Scanf è fallita\n");
       return 0;
     }
 
@@ -196,7 +209,7 @@ int trova_min_from(unsigned short len, unsigned long * array, unsigned long sogl
       }
     }
   }
-  printf("*****************************************indice_min:=%d\n", indice_min);
+  //printf("*****************************************indice_min:=%d\n", indice_min);
   return indice_min;
 
 }
@@ -208,7 +221,7 @@ int trova_min(unsigned short len, unsigned long * array)
   unsigned long min;
 
   /*Se resta -1, tutti gli elementi sono a zero, zero non raggiungibile*/
-  printf("Trova_min appena iniziato\n");
+  //printf("Trova_min appena iniziato\n");
   indice_min = -1;
   for(i=0;i<len; i++){
     if(array[i] > 0){
@@ -224,7 +237,7 @@ int trova_min(unsigned short len, unsigned long * array)
       min=array[i];
     }
   }
-  printf("Trova_min concluso: return %d\n", indice_min);
+  //printf("Trova_min concluso: return %d\n", indice_min);
   return indice_min;
 }
 
